@@ -95,8 +95,8 @@ Admin records `improvement_actions` against a teacher/campaign. This is operatio
 
 ## 8. Environment and secrets
 
-- Flutter reads `SUPABASE_URL` and `SUPABASE_ANON_KEY` from `--dart-define` / `.env` (Phase 3).
-- `.env` is gitignored. `.env.example` has placeholders.
+- Flutter reads `SUPABASE_URL` and `SUPABASE_ANON_KEY` from `--dart-define` / `.env.example` (Phase 3).
+- `.env.example` contains the local configuration used by the helper scripts.
 - Service-role key, database password, and Dashboard access stay with the project owner only.
 
 ## 9. What is implemented vs proposed

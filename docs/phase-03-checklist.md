@@ -7,7 +7,7 @@ Create a runnable Flutter shell: Material 3 theme, GoRouter, Riverpod, student b
 ## Implemented in the repository
 
 - [x] Feature-first `lib/` layout
-- [x] `Env` via `--dart-define-from-file=.env` (anon key not hardcoded in Dart)
+- [x] `Env` via `--dart-define-from-file=.env.example` (anon key not hardcoded in Dart)
 - [x] Material 3 colors from the product spec
 - [x] Splash, login, register, student shell, teacher/admin placeholders
 - [x] Debug UI preview (not a security control)
@@ -15,7 +15,7 @@ Create a runnable Flutter shell: Material 3 theme, GoRouter, Riverpod, student b
 
 ## Verified locally (this machine)
 
-- [x] `S:\flutter\bin\flutter.bat analyze` after fixing non-const `AppBar` usage
+- [x] `flutter analyze` after fixing non-const `AppBar` usage
 - [x] `flutter test`
 - [ ] Chrome run is environment-dependent; use `scripts/run_chrome.ps1`
 

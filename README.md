@@ -16,7 +16,7 @@ This repository is built in phases. The original multi-institution design docume
 | `docs/phase-04-checklist.md` | Auth, profiles, institutions, verification |
 | `supabase/migrations/` | PostgreSQL schema, RLS, RPCs |
 | `lib/` | Flutter app (Android / Chrome / Windows) |
-| `.env.example` | Supabase project URL and anon-key placeholder |
+| `.env.example` | Supabase project URL and anon-key configuration |
 
 ## Current phase status
 
@@ -30,17 +30,40 @@ This repository is built in phases. The original multi-institution design docume
 
 ## Run the Flutter app
 
-SDK used here: `S:\flutter`.
+### Codespaces / Bash
 
-```powershell
-$env:PATH = "S:\flutter\bin;" + $env:PATH
-cd "C:\Users\shahj\Downloads\Student Feedback System"
-copy .env.example .env   # then paste the anon key into .env
+After Flutter is installed and available on `PATH`:
+
+```bash
 flutter pub get
-flutter run -d chrome --dart-define-from-file=.env
+./tool/flutter-with-env.sh run -d web-server --web-port 8080 --web-hostname 0.0.0.0
 ```
 
-Or `scripts/run_chrome.ps1`. In VS Code / Cursor use launch configuration **TaleemVoice (Chrome)**.
+Open forwarded port `8080` in the Codespace Ports tab. The script reads
+`.env.example` and supplies both Supabase Dart defines.
+
+### Windows PowerShell
+
+```powershell
+.\tool\flutter-with-env.ps1 run -d chrome
+```
+
+Or `scripts/run_chrome.ps1` on Windows. In Codespaces, select launch
+configuration **TaleemVoice (Codespace)**; it supplies `.env.example`
+automatically.
+
+### Supported environments
+
+| Environment | Supported target | Entry point |
+| --- | --- | --- |
+| Linux desktop | Chrome or web-server | `./tool/flutter-with-env.sh run -d chrome` |
+| Windows desktop | Chrome | `.\tool\flutter-with-env.ps1 run -d chrome` |
+| Codespaces / hosted Linux | web-server | `./tool/flutter-with-env.sh run -d web-server --web-port 8080 --web-hostname 0.0.0.0` |
+| Any deployment host | static web build | `./tool/flutter-with-env.sh build web --release` |
+
+Flutter and the selected device/browser must be installed on the host. The
+application itself is platform-neutral; all platforms use the same
+`.env.example` configuration and Supabase client.
 
 Never put the **service_role** key in Flutter, GitHub, or this folder.
 

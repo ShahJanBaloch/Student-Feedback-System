@@ -6,7 +6,7 @@
 
 - URL: `https://ydfprhodrltkykqxhvnc.supabase.co`
 - Project ID: `ydfprhodrltkykqxhvnc`
-- Flutter will use the **anon** key only, from a local `.env` that is gitignored.
+- Flutter will use the **anon** key only, from local `.env.example` configuration.
 
 ## 2. How to apply (owner machine)
 

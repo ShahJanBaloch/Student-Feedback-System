@@ -19,7 +19,7 @@
 - [x] RLS on all tables; no client write path to raw submissions
 - [x] Follow-up migrations disable active Super Admin and institution-onboarding paths while retaining legacy records
 - [x] Seed of seven evaluation criteria
-- [x] `.env.example` without the live key; local `.env` gitignored
+- [x] `.env.example` contains the local Supabase configuration
 
 ## You still need to do on the hosted project
 

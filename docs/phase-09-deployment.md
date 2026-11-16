@@ -36,12 +36,11 @@ hosted Auth/RLS checks.
 
 ## Static web deployment
 
-1. Copy `.env.example` to `.env` locally and set the hosted Supabase URL and
-   anon/publishable key.
+1. Set the hosted Supabase URL and anon/publishable key in `.env.example`.
 2. Build the production app:
 
    ```powershell
-   flutter build web --release --dart-define-from-file=.env --base-href /
+   flutter build web --release --dart-define-from-file=.env.example --base-href /
    ```
 
 3. Publish the contents of `build/web/` to an HTTPS static host. Configure

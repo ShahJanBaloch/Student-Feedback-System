@@ -15,6 +15,7 @@ dependencies:
   supabase_flutter: ^2.9.0
   intl: ^0.20.3
 
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
