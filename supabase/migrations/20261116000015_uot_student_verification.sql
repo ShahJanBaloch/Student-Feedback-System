@@ -426,14 +426,20 @@ begin
   end if;
 
   update public.access_requests
-  set status = case when p_approve then 'approved' else 'rejected' end,
+  set status = case
+        when p_approve then 'approved'::public.access_request_status
+        else 'rejected'::public.access_request_status
+      end,
       decided_by = auth.uid(),
       decided_at = now(),
       decision_reason = coalesce(p_reason, case when p_approve then 'verified' else 'rejected' end)
   where id = p_request_id;
 
   update public.student_enrollments
-  set verification_status = case when p_approve then 'verified' else 'rejected' end
+  set verification_status = case
+        when p_approve then 'verified'::public.verification_status
+        else 'rejected'::public.verification_status
+      end
   where id = v_enrollment_id;
 
   if p_approve then

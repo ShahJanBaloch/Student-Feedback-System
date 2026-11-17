@@ -1,18 +1,19 @@
 /// Reads Supabase settings from compile-time Dart defines.
 ///
-/// The anon key is a client key. It is still not hardcoded in Dart source.
-/// Use `tool/flutter-with-env.ps1` or `--dart-define-from-file=.env.example`.
+/// The anon key is a public client key. Dart defines can override these
+/// defaults for another Supabase project or deployment environment.
 class Env {
   const Env._();
 
   static const supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: '',
+    defaultValue: 'https://ydfprhodrltkykqxhvnc.supabase.co',
   );
 
   static const supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: '',
+    defaultValue:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlkZnByb2RybHRreWtxeGh2bmMiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc5NDU5NDk4MywiZXhwIjoyMTEwMTcwOTgzfQ.IyAOKIpVdIYViXccG8kwtMrjgK0aJmlLK8nPvX_UAfY',
   );
 
   static bool get isConfigured =>

@@ -33,6 +33,8 @@ class _AcademicAdminScreenState extends ConsumerState<AcademicAdminScreen> {
   final _subjectCodeController = TextEditingController();
   final _subjectNameController = TextEditingController();
   final _rosterCsvController = TextEditingController();
+  final _campaignTitleController = TextEditingController();
+  final _campaignDescriptionController = TextEditingController();
   DateTime? _sessionStartsOn;
   DateTime? _sessionEndsOn;
   var _sessionIsCurrent = false;
@@ -41,6 +43,9 @@ class _AcademicAdminScreenState extends ConsumerState<AcademicAdminScreen> {
   String? _selectedSemesterProgramId;
   String? _selectedSemesterId;
   String? _selectedSessionId;
+  String? _selectedTeacherProfileId;
+  String? _selectedSubjectId;
+  String? _selectedClassId;
   var _loading = false;
 
   @override
@@ -57,6 +62,8 @@ class _AcademicAdminScreenState extends ConsumerState<AcademicAdminScreen> {
     _subjectCodeController.dispose();
     _subjectNameController.dispose();
     _rosterCsvController.dispose();
+    _campaignTitleController.dispose();
+    _campaignDescriptionController.dispose();
     super.dispose();
   }
 
@@ -64,6 +71,7 @@ class _AcademicAdminScreenState extends ConsumerState<AcademicAdminScreen> {
   Widget build(BuildContext context) {
     final institutionId = ref.watch(activeInstitutionProvider)?.id ?? '';
     final overview = ref.watch(academicOverviewProvider(institutionId));
+    final campaigns = ref.watch(institutionCampaignsProvider(institutionId));
 
     return Scaffold(
       appBar: AppBar(
@@ -181,6 +189,96 @@ class _AcademicAdminScreenState extends ConsumerState<AcademicAdminScreen> {
               ),
               const SizedBox(height: 12),
               SectionCard(
+                title: 'Assign teacher',
+                subtitle: 'Connect an approved teacher to a subject and class.',
+                child: Column(
+                  children: [
+                    DropdownMenu<String>(
+                      label: const Text('Teacher'),
+                      expandedInsets: EdgeInsets.zero,
+                      initialSelection: _selectedTeacherProfileId,
+                      dropdownMenuEntries: data.teacherProfiles
+                          .where((teacher) => teacher.isActive)
+                          .map(
+                            (teacher) => DropdownMenuEntry(
+                              value: teacher.id,
+                              label: teacher.employeeCode?.isNotEmpty == true
+                                  ? teacher.employeeCode!
+                                  : 'Teacher profile',
+                            ),
+                          )
+                          .toList(),
+                      onSelected: (value) => setState(
+                        () => _selectedTeacherProfileId = value,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownMenu<String>(
+                      label: const Text('Subject'),
+                      expandedInsets: EdgeInsets.zero,
+                      initialSelection: _selectedSubjectId,
+                      dropdownMenuEntries: data.subjects
+                          .where((subject) => subject.isActive)
+                          .map(
+                            (subject) => DropdownMenuEntry(
+                              value: subject.id,
+                              label: '${subject.code} · ${subject.name}',
+                            ),
+                          )
+                          .toList(),
+                      onSelected: (value) => setState(
+                        () => _selectedSubjectId = value,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownMenu<String>(
+                      label: const Text('Class'),
+                      expandedInsets: EdgeInsets.zero,
+                      initialSelection: _selectedClassId,
+                      dropdownMenuEntries: data.classes
+                          .map(
+                            (academicClass) => DropdownMenuEntry(
+                              value: academicClass.id,
+                              label: academicClass.section?.isNotEmpty == true
+                                  ? '${academicClass.name} (${academicClass.section})'
+                                  : academicClass.name,
+                            ),
+                          )
+                          .toList(),
+                      onSelected: (value) => setState(
+                        () => _selectedClassId = value,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownMenu<String>(
+                      label: const Text('Academic session'),
+                      expandedInsets: EdgeInsets.zero,
+                      initialSelection: _selectedSessionId,
+                      dropdownMenuEntries: data.sessions
+                          .map(
+                            (session) => DropdownMenuEntry(
+                              value: session.id,
+                              label: session.name,
+                            ),
+                          )
+                          .toList(),
+                      onSelected: (value) => setState(
+                        () => _selectedSessionId = value,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    AppButton(
+                      label: 'Save teacher assignment',
+                      loading: _loading,
+                      onPressed: () => _createTeacherAssignment(
+                        institutionId,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              SectionCard(
                 title: 'Roster import',
                 subtitle:
                     'CSV format: student_number, full_name, program_name, class_name, session_name',
@@ -202,6 +300,130 @@ class _AcademicAdminScreenState extends ConsumerState<AcademicAdminScreen> {
                       onPressed: () => _importRoster(institutionId),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              SectionCard(
+                title: 'Teacher directory',
+                subtitle: '${data.teacherProfiles.length} approved teacher profile(s)',
+                child: data.teacherProfiles.isEmpty
+                    ? const Text(
+                        'Approved Teacher accounts will appear here after '
+                        'their access request is accepted.',
+                      )
+                    : Column(
+                        children: data.teacherProfiles
+                            .map(
+                              (teacher) => ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: const CircleAvatar(
+                                  child: Icon(Icons.person_outline),
+                                ),
+                                title: Text(
+                                  teacher.employeeCode?.isNotEmpty == true
+                                      ? teacher.employeeCode!
+                                      : 'Teacher profile',
+                                ),
+                                subtitle: Text(
+                                  teacher.designation?.isNotEmpty == true
+                                      ? teacher.designation!
+                                      : 'Ready for subject and class assignment',
+                                ),
+                                trailing: Icon(
+                                  teacher.isActive
+                                      ? Icons.check_circle_outline
+                                      : Icons.pause_circle_outline,
+                                  color: teacher.isActive
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).colorScheme.outline,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+              ),
+              const SizedBox(height: 12),
+              SectionCard(
+                title: 'Start feedback campaign',
+                subtitle: 'Create an anonymous campaign for the current session.',
+                child: Column(
+                  children: [
+                    AppTextField(
+                      label: 'Campaign title',
+                      controller: _campaignTitleController,
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'Description (optional)',
+                      ),
+                      controller: _campaignDescriptionController,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownMenu<String>(
+                      label: const Text('Academic session'),
+                      expandedInsets: EdgeInsets.zero,
+                      initialSelection: _selectedSessionId,
+                      dropdownMenuEntries: data.sessions
+                          .map(
+                            (session) => DropdownMenuEntry(
+                              value: session.id,
+                              label: '${session.name} · ${session.displayRange}',
+                            ),
+                          )
+                          .toList(),
+                      onSelected: (value) => setState(
+                        () => _selectedSessionId = value,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    AppButton(
+                      label: 'Start campaign',
+                      loading: _loading,
+                      onPressed: () => _createCampaign(
+                        institutionId,
+                        data.sessions,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              campaigns.when(
+                loading: () => const LoadingState(
+                  message: 'Loading feedback campaigns…',
+                ),
+                error: (error, _) => Text('Campaigns unavailable: $error'),
+                data: (items) => SectionCard(
+                  title: 'Campaign lifecycle',
+                  subtitle: '${items.length} campaign(s)',
+                  child: items.isEmpty
+                      ? const Text('No campaigns have been created yet.')
+                      : Column(
+                          children: items
+                              .map(
+                                (campaign) => ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: const Icon(Icons.poll_outlined),
+                                  title: Text(campaign.title),
+                                  subtitle: Text(
+                                    '${campaign.status.toUpperCase()} · '
+                                    '${campaign.timeRange}',
+                                  ),
+                                  trailing: campaign.isOpen
+                                      ? TextButton(
+                                          onPressed: () => _closeCampaign(
+                                            institutionId,
+                                            campaign.id,
+                                          ),
+                                          child: const Text('Close'),
+                                        )
+                                      : null,
+                                ),
+                              )
+                              .toList(),
+                        ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -256,6 +478,88 @@ class _AcademicAdminScreenState extends ConsumerState<AcademicAdminScreen> {
       _departmentCodeController.clear();
       ref.invalidate(academicOverviewProvider(institutionId));
       _showMessage('Department created.');
+    } on AppException catch (error) {
+      _showMessage(error.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+
+  }
+
+  Future<void> _createTeacherAssignment(String institutionId) async {
+    if (institutionId.isEmpty ||
+        _selectedTeacherProfileId == null ||
+        _selectedSubjectId == null ||
+        _selectedClassId == null ||
+        _selectedSessionId == null) {
+      _showMessage('Select a teacher, subject, class, and session.');
+      return;
+    }
+
+    try {
+      setState(() => _loading = true);
+      await ref.read(academicRepositoryProvider).createTeacherAssignment(
+            institutionId: institutionId,
+            teacherProfileId: _selectedTeacherProfileId!,
+            subjectId: _selectedSubjectId!,
+            classId: _selectedClassId!,
+            sessionId: _selectedSessionId!,
+          );
+      ref.invalidate(academicOverviewProvider(institutionId));
+      _showMessage('Teacher assignment saved.');
+    } on AppException catch (error) {
+      _showMessage(error.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _createCampaign(
+    String institutionId,
+    List<AcademicSession> sessions,
+  ) async {
+    final title = _campaignTitleController.text.trim();
+    if (institutionId.isEmpty || title.isEmpty || _selectedSessionId == null) {
+      _showMessage('Enter a title and select an academic session.');
+      return;
+    }
+
+    final matchingSessions =
+        sessions.where((item) => item.id == _selectedSessionId).toList();
+    final session = matchingSessions.isEmpty ? null : matchingSessions.first;
+    if (session == null) {
+      _showMessage('The selected academic session is no longer available.');
+      return;
+    }
+
+    try {
+      setState(() => _loading = true);
+      await ref.read(campaignRepositoryProvider).createOpenCampaign(
+            institutionId: institutionId,
+            sessionId: session.id,
+            title: title,
+            description: _campaignDescriptionController.text,
+            endsAt: session.endsOn,
+          );
+      _campaignTitleController.clear();
+      _campaignDescriptionController.clear();
+      _showMessage('Campaign started and student eligibility generated.');
+    } on AppException catch (error) {
+      _showMessage(error.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _closeCampaign(
+    String institutionId,
+    String campaignId,
+  ) async {
+    try {
+      setState(() => _loading = true);
+      await ref.read(campaignRepositoryProvider).closeCampaign(campaignId);
+      ref.invalidate(institutionCampaignsProvider(institutionId));
+      _showMessage('Campaign closed.');
     } on AppException catch (error) {
       _showMessage(error.message);
     } finally {

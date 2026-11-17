@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/errors/app_exception.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/loading_state.dart';
 import '../../../core/widgets/section_card.dart';
@@ -17,6 +18,7 @@ class TeacherDashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final institution = ref.watch(activeInstitutionProvider);
     final reports = ref.watch(teacherReportsProvider);
+    final assignments = ref.watch(teacherAssignmentCountProvider);
 
     return Scaffold(
       appBar: const RoleAppBar(title: 'Teacher'),
@@ -38,6 +40,37 @@ class TeacherDashboardScreen extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              Container(
+                padding: const EdgeInsets.all(22),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.secondary, AppColors.primary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.insights_outlined,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Text(
+                        'Your teaching insights',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
               SectionCard(
                 title: institution?.name ?? 'Assigned institution',
                 subtitle: 'Feedback reports',
@@ -48,12 +81,30 @@ class TeacherDashboardScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
+              assignments.when(
+                loading: () => const LinearProgressIndicator(),
+                error: (error, _) => Text('Assignment status unavailable: $error'),
+                data: (count) => SectionCard(
+                  title: 'Teaching assignments',
+                  subtitle: '$count active assignment(s)',
+                  child: Text(
+                    count == 0
+                        ? 'Your account is approved, but no subject or class '
+                            'has been assigned yet. Ask VC/Admin to configure '
+                            'your academic assignment.'
+                        : 'Your reports are based on these assigned subjects '
+                            'and classes.',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               if (items.isEmpty)
                 const EmptyState(
                   icon: Icons.analytics_outlined,
                   title: 'No campaign reports yet',
                   message:
-                      'Reports appear here after an institution runs a campaign for your assigned classes.',
+                      'Reports appear here after an institution runs a '
+                      'campaign for your assigned classes.',
                 )
               else
                 ...items.map(

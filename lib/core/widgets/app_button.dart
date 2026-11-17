@@ -26,6 +26,11 @@ class AppButton extends StatelessWidget {
 
     final button = FilledButton(
       onPressed: loading ? null : onPressed,
+      style: FilledButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       child: child,
     );
 

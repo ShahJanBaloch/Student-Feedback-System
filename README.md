@@ -22,7 +22,7 @@ This repository is built in phases. The original multi-institution design docume
 
 - Phase 5 academic structure, semesters, and roster import are implemented in `lib/`.
 - UOT student registration is self-service and awaits manual VC/Admin review; no institution approval or student roster match is required.
-- Phase 6 campaign listing is implemented; campaign creation and student submission UI are still pending.
+- Phase 6 campaign creation, eligibility, listing, and anonymous student submission UI are implemented; hosted data is required to verify them end to end.
 - Phase 7 teacher aggregate reports are implemented; the hosted migration and real campaign data are required to verify them end to end.
 - Phase 8 in-app notifications, comment moderation, and improvement-action tracking are implemented; hosted migration and data verification remain.
 - Phase 9 adds CI checks and static web deployment guidance; hosted Auth/RLS verification and provider-specific deployment remain manual. Load tests, NLP, push, and Urdu/Balochi are later work.
@@ -39,8 +39,9 @@ flutter pub get
 ./tool/flutter-with-env.sh run -d web-server --web-port 8080 --web-hostname 0.0.0.0
 ```
 
-Open forwarded port `8080` in the Codespace Ports tab. The script reads
-`.env.example` and supplies both Supabase Dart defines.
+Open forwarded port `8080` in the Codespace Ports tab. The repository's VS
+Code settings pin the web server to this port and load `.env.example` when
+using the Run button.
 
 ### Windows PowerShell
 
@@ -94,7 +95,7 @@ Results are shown only after a minimum number of responses. They describe studen
 3. Flutter shell, theme, navigation — **in `lib/`**
 4. Auth, profiles, UOT student registration, and manual verification — **in `lib/`**
 5. Academic structure and roster — **implemented in `lib/`; hosted data setup remains**
-6. Campaign listing — **implemented; secure submission flow remains**
+6. Campaign creation, eligibility, listing, and submission — **implemented; hosted verification remains**
 7. Teacher aggregate analytics — **implemented; hosted migration/data verification remains**
 8. Notifications, comment moderation, improvement actions — **implemented; hosted migration/data verification remains**
 9. Tests, security checks, and static web release preparation — **CI and deployment guide added; hosted verification and deployment remain manual**

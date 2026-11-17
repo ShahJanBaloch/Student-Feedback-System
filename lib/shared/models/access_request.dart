@@ -23,6 +23,15 @@ class AccessRequest {
 
   String get studentNumber => '${payload['student_number'] ?? ''}';
   String get submittedName => '${payload['full_name'] ?? ''}';
+  String get requestedRole => '${payload['requested_role'] ?? ''}';
+  String get requestedRoleLabel {
+    return switch (requestedRole) {
+      'institution_admin' => 'VC / Admin',
+      'hod' => 'HOD',
+      'teacher' => 'Teacher',
+      _ => 'Staff',
+    };
+  }
 
   factory AccessRequest.fromMap(Map<String, dynamic> map) {
     return AccessRequest(

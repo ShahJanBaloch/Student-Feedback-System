@@ -113,12 +113,14 @@ final activeInstitutionProvider = Provider<Institution?>((ref) {
 });
 
 void invalidateAccount(WidgetRef ref) {
-  ref.invalidate(profileProvider);
-  ref.invalidate(membershipsProvider);
-  ref.invalidate(platformSettingsProvider);
-  ref.invalidate(myVerificationRequestsProvider);
-  ref.invalidate(pendingVerificationsProvider);
-  ref.invalidate(auditLogsProvider);
+  Future<void>.microtask(() {
+    ref.invalidate(profileProvider);
+    ref.invalidate(membershipsProvider);
+    ref.invalidate(platformSettingsProvider);
+    ref.invalidate(myVerificationRequestsProvider);
+    ref.invalidate(pendingVerificationsProvider);
+    ref.invalidate(auditLogsProvider);
+  });
 }
 
 final hasActiveMembershipProvider = Provider<bool>((ref) {

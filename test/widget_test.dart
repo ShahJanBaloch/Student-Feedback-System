@@ -9,6 +9,7 @@ import 'package:taleemvoice/core/constants/app_roles.dart';
 import 'package:taleemvoice/core/router/app_routes.dart';
 import 'package:taleemvoice/core/widgets/empty_state.dart';
 import 'package:taleemvoice/shared/models/app_notification.dart';
+import 'package:taleemvoice/shared/models/access_request.dart';
 import 'package:taleemvoice/shared/models/campaign_target_report.dart';
 import 'package:taleemvoice/shared/models/improvement_action.dart';
 import 'package:taleemvoice/shared/models/institution.dart';
@@ -86,6 +87,18 @@ void main() {
     expect(AppRole.vcAdmin.label, 'VC / Admin');
   });
 
+  test('role access requests expose a readable role label', () {
+    final request = AccessRequest.fromMap({
+      'id': 'request-id',
+      'requester_id': 'user-id',
+      'request_type': 'role_access',
+      'status': 'pending',
+      'payload': {'requested_role': 'institution_admin'},
+    });
+
+    expect(request.requestedRoleLabel, 'VC / Admin');
+  });
+
   testWidgets('empty state renders title and message', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
@@ -99,11 +112,11 @@ void main() {
     expect(find.text('None yet'), findsOneWidget);
   });
 
-  test('environment defaults stay unset until provided by dart-define', () {
-    expect(Env.supabaseUrl, isEmpty);
-    expect(Env.supabaseAnonKey, isEmpty);
-    expect(Env.isConfigured, isFalse);
-    expect(Env.configurationError, contains('SUPABASE_URL'));
+  test('environment has the public Supabase fallback configuration', () {
+    expect(Env.supabaseUrl, startsWith('https://'));
+    expect(Env.supabaseAnonKey, isNotEmpty);
+    expect(Env.isConfigured, isTrue);
+    expect(Env.configurationError, isNull);
   });
 
   test('institution map parses enums', () {

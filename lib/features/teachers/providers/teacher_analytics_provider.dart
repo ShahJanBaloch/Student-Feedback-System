@@ -18,3 +18,16 @@ final teacherReportsProvider =
         userId: userId,
       );
 });
+
+final teacherAssignmentCountProvider = FutureProvider<int>((ref) async {
+  final institution = ref.watch(activeInstitutionProvider);
+  final userId = ref.watch(currentSessionProvider)?.user.id;
+  if (institution == null || userId == null) {
+    return 0;
+  }
+
+  return ref.watch(teacherAnalyticsRepositoryProvider).fetchAssignmentCount(
+        institutionId: institution.id,
+        userId: userId,
+      );
+});

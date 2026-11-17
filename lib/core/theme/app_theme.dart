@@ -29,17 +29,42 @@ class AppTheme {
     );
 
     return base.copyWith(
+      textTheme: base.textTheme.copyWith(
+        headlineSmall: const TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.5,
+          color: AppColors.secondary,
+        ),
+        titleLarge: const TextStyle(
+          fontSize: 21,
+          fontWeight: FontWeight.w700,
+          color: AppColors.secondary,
+        ),
+        titleMedium: const TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          color: AppColors.secondary,
+        ),
+        bodyLarge: const TextStyle(
+          fontSize: 16,
+          height: 1.45,
+          color: AppColors.onBackground,
+        ),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.secondary,
         elevation: 0,
         centerTitle: false,
+        scrolledUnderElevation: 0,
       ),
       cardTheme: CardThemeData(
         color: AppColors.surface,
-        elevation: 0,
+        elevation: 1,
+        shadowColor: const Color(0x140F1838),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           side: const BorderSide(color: AppColors.outline),
         ),
       ),
@@ -66,8 +91,19 @@ class AppTheme {
       ),
       navigationBarTheme: const NavigationBarThemeData(
         backgroundColor: AppColors.surface,
-        indicatorColor: Color(0x33145DA0),
+        indicatorColor: Color(0x22159A8A),
         height: 72,
+      ),
+      navigationRailTheme: const NavigationRailThemeData(
+        backgroundColor: AppColors.surface,
+        indicatorColor: Color(0x22159A8A),
+        minWidth: 88,
+        groupAlignment: -0.7,
+      ),
+      chipTheme: base.chipTheme.copyWith(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        side: const BorderSide(color: AppColors.outline),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       ),
     );
   }

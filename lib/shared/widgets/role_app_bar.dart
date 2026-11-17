@@ -8,6 +8,7 @@ import '../providers/account_provider.dart';
 import '../providers/active_role_provider.dart';
 import '../providers/repositories.dart';
 import '../providers/session_provider.dart';
+import '../../core/theme/app_colors.dart';
 
 class RoleAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const RoleAppBar({super.key, required this.title});
@@ -23,7 +24,23 @@ class RoleAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final current = ref.watch(resolvedRoleProvider);
 
     return AppBar(
-      title: Text(title),
+      titleSpacing: 20,
+      title: Row(
+        children: [
+          Container(
+            height: 34,
+            width: 34,
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child:
+                const Icon(Icons.forum_rounded, color: Colors.white, size: 19),
+          ),
+          const SizedBox(width: 10),
+          Text(title),
+        ],
+      ),
       actions: [
         if (roles.length > 1)
           PopupMenuButton<AppRole>(

@@ -187,6 +187,27 @@ class AcademicRepository {
     } catch (error) {
       throw ErrorMapper.map(error);
     }
+
+  }
+
+  Future<void> createTeacherAssignment({
+    required String institutionId,
+    required String teacherProfileId,
+    required String subjectId,
+    required String classId,
+    required String sessionId,
+  }) async {
+    try {
+      await _client.from('teacher_assignments').insert({
+        'institution_id': institutionId,
+        'teacher_profile_id': teacherProfileId,
+        'subject_id': subjectId,
+        'class_id': classId,
+        'session_id': sessionId,
+      });
+    } catch (error) {
+      throw ErrorMapper.map(error);
+    }
   }
 
   Future<AcademicSession> createSession({

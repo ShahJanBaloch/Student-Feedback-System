@@ -61,6 +61,11 @@ class ErrorMapper {
   static String _postgrestMessage(supabase.PostgrestException error) {
     final code = error.code ?? '';
     final message = error.message;
+    if (message.contains('uot_student_registration_options') &&
+        message.contains('schema cache')) {
+      return 'Student registration is not enabled in Supabase yet. Apply '
+          'migration 20261116000015_uot_student_verification.sql, then retry.';
+    }
     if (code == '42501' || message.contains('not authorized')) {
       return 'You are not allowed to do this. Permissions are enforced in PostgreSQL.';
     }
@@ -71,6 +76,14 @@ class ErrorMapper {
       return 'That institution is not approved yet.';
     }
     if (code == 'P0002') {
+      if (message.contains('roster entry missing')) {
+        return 'The older verification workflow is still active in Supabase. '
+            'Apply the UOT verification function from migration 15.';
+      }
+      if (message.contains('pending student enrollment')) {
+        return 'The student registration record is incomplete. Submit the '
+            'student registration again, then approve it.';
+      }
       return 'The record was not found or cannot be processed yet.';
     }
     if (code == '23505') {

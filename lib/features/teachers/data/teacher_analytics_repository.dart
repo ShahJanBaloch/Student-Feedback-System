@@ -8,6 +8,32 @@ class TeacherAnalyticsRepository {
 
   final SupabaseClient _client;
 
+  Future<int> fetchAssignmentCount({
+    required String institutionId,
+    required String userId,
+  }) async {
+    try {
+      final teacherRows = await _client
+          .from('teacher_profiles')
+          .select('id')
+          .eq('institution_id', institutionId)
+          .eq('user_id', userId)
+          .eq('is_active', true);
+      final teacherIds = teacherRows.map((row) => row['id'] as String).toList();
+      if (teacherIds.isEmpty) {
+        return 0;
+      }
+      final assignments = await _client
+          .from('teacher_assignments')
+          .select('id')
+          .eq('institution_id', institutionId)
+          .inFilter('teacher_profile_id', teacherIds);
+      return assignments.length;
+    } catch (error) {
+      throw ErrorMapper.map(error);
+    }
+  }
+
   Future<List<CampaignTargetReport>> fetchReports({
     required String institutionId,
     required String userId,

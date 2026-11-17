@@ -32,9 +32,13 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier<int>(0);
-  ref.listen(currentSessionProvider, (_, __) => refresh.value++);
-  ref.listen(resolvedRoleProvider, (_, __) => refresh.value++);
-  ref.listen(membershipsProvider, (_, __) => refresh.value++);
+  void scheduleRefresh() {
+    Future<void>.microtask(() => refresh.value++);
+  }
+
+  ref.listen(currentSessionProvider, (_, __) => scheduleRefresh());
+  ref.listen(resolvedRoleProvider, (_, __) => scheduleRefresh());
+  ref.listen(membershipsProvider, (_, __) => scheduleRefresh());
   ref.onDispose(refresh.dispose);
 
   return GoRouter(

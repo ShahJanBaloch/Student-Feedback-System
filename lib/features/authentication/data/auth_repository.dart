@@ -66,7 +66,11 @@ class AuthRepository {
       throw ErrorMapper.map(error);
     }
 
-    if (!hasRole && role != AppRole.student) {
+    final requestedRole = _requestedRoleForUser();
+    final pendingRequestedRole = !hasRole &&
+        role != AppRole.student &&
+        requestedRole == role.storageValue;
+    if (!hasRole && !pendingRequestedRole && role != AppRole.student) {
       await signOut();
       throw AppAuthException(
         'This account does not have an active ${role.label} role.',
@@ -74,6 +78,11 @@ class AuthRepository {
     }
     // Unverified students must be able to reach roster verification; RLS
     // continues to block feedback access until an active student membership exists.
+  }
+
+  String? _requestedRoleForUser() {
+    final value = _client.auth.currentUser?.userMetadata?['requested_role'];
+    return value is String ? value : null;
   }
 
   Future<void> sendPasswordResetEmail({
@@ -104,12 +113,16 @@ class AuthRepository {
     required String email,
     required String password,
     required String fullName,
+    required AppRole requestedRole,
   }) async {
     try {
       final response = await _client.auth.signUp(
         email: email.trim(),
         password: password,
-        data: {'full_name': fullName.trim()},
+        data: {
+          'full_name': fullName.trim(),
+          'requested_role': requestedRole.storageValue,
+        },
       );
       return SignUpResult(
         needsEmailConfirmation: response.session == null,

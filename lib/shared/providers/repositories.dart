@@ -2,13 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/academics/data/academic_repository.dart';
 import '../../features/authentication/data/auth_repository.dart';
-import '../../features/feedback_campaigns/data/campaign_repository.dart';
 import '../../features/institutions/data/institution_repository.dart';
 import '../../features/improvements/data/improvement_repository.dart';
 import '../../features/moderation/data/moderation_repository.dart';
 import '../../features/notifications/data/notification_repository.dart';
 import '../../features/profile/data/profile_repository.dart';
 import '../../features/teachers/data/teacher_analytics_repository.dart';
+import '../../features/feedback_campaigns/data/campaign_repository.dart';
 import '../../features/student_verification/data/verification_repository.dart';
 import '../models/academic_entities.dart';
 import '../models/campaign.dart';
@@ -31,9 +31,6 @@ final verificationRepositoryProvider = Provider<VerificationRepository>((ref) {
   return VerificationRepository(ref.watch(supabaseClientProvider));
 });
 
-final campaignRepositoryProvider = Provider<CampaignRepository>((ref) {
-  return CampaignRepository(ref.watch(supabaseClientProvider));
-});
 
 final academicRepositoryProvider = Provider<AcademicRepository>((ref) {
   return AcademicRepository(ref.watch(supabaseClientProvider));
@@ -67,6 +64,18 @@ final openCampaignsProvider = FutureProvider.family<List<Campaign>, String>(
   },
 );
 
+final institutionCampaignsProvider =
+    FutureProvider.family<List<Campaign>, String>((ref, institutionId) async {
+  if (institutionId.trim().isEmpty) {
+    return const [];
+  }
+  return ref.watch(campaignRepositoryProvider).fetchCampaigns(institutionId);
+});
+
+final campaignRepositoryProvider = Provider<CampaignRepository>((ref) {
+  return CampaignRepository(ref.watch(supabaseClientProvider));
+});
+
 final academicOverviewProvider =
     FutureProvider.family<AcademicOverview, String>(
   (ref, institutionId) async {
@@ -92,4 +101,8 @@ final uotStudentRegistrationOptionsProvider =
   return ref
       .watch(academicRepositoryProvider)
       .fetchUotStudentRegistrationOptions();
+});
+
+final uotDepartmentsProvider = FutureProvider<List<Department>>((ref) async {
+  return ref.watch(verificationRepositoryProvider).fetchUotDepartments();
 });

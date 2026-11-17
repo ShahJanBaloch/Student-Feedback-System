@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/app_routes.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/section_card.dart';
 import '../../../shared/providers/account_provider.dart';
@@ -20,6 +21,38 @@ class VcAdminDashboardScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Container(
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.secondary, AppColors.primary],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: const Row(
+              children: [
+                Icon(
+                  Icons.admin_panel_settings_outlined,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    'University administration',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
           const SectionCard(
             title: 'University of Turbat',
             subtitle: 'VC / Admin access · University of Turbat',
@@ -30,14 +63,14 @@ class VcAdminDashboardScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           SectionCard(
-            title: 'Student verification',
+            title: 'Access requests',
             subtitle: '${pending.length} pending request(s) visible to you',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Review student registration details and verify eligibility. '
-                  'Anonymous feedback does not reveal student identities.',
+                  'Review student verification and staff-role requests. '
+                  'Approved roles are activated automatically.',
                 ),
                 const SizedBox(height: 12),
                 AppButton(
